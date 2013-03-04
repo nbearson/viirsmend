@@ -1,0 +1,14 @@
+# Compiled python modules.
+*.pyc
+
+# mac cruft
+*.DS_Store
+
+# Setuptools distribution folder.
+/dist/
+
+# Test data folder.
+/viirsmend/testdata/
+
+# Python egg metadata, regenerated from source files by setuptools.
+/*.egg-info
