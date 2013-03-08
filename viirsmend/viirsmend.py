@@ -18,8 +18,6 @@ log = logging.getLogger(__name__)
 MOD_RESOLUTION = 16   # Also functions as number of detectors
 IMG_RESOLUTION = 32
 
-# FIXME: THESE TRIM TABLES ARE OFF BY APPROX. A PIXEL
-
 MOD_TRIM_TABLE = [[1008, 2192],
                   [640 , 2560],
                   [0   , 3199],
