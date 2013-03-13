@@ -72,12 +72,14 @@ IMG_TRIM_TABLE = [[2016, 4384],
 
 class ViirsMender:
     """
-    FIXME: doc
+    ViirsMender is our object class that holds all our mending functions. Should only need
+    to instantiate one of these per granule set.
     """
 
     def __init__(self, lons, lats, res=MOD_RESOLUTION):
         """
-    FIXME: doc
+        lons and lats are typically 2d arrays read straight from the G*TCO files.
+        res should be passed one of the constants (MOD_RESOLUTION or IMG_RESOLUTION)
         """
         if res == MOD_RESOLUTION:
           self.TrimTable = MOD_TRIM_TABLE
@@ -119,7 +121,7 @@ class ViirsMender:
 
     def _ll2terra(self, lons, lats):
       """
-        FIXME: doc
+      Internal function for converting lons and lats to x,y,z coordinate space
       """
       EARTH_RADIUS = 6378137  # meters
       rlats = np.deg2rad(lats)
@@ -132,8 +134,8 @@ class ViirsMender:
 
     def _createTrimArray(self, nscans=48, trimType=bool):
         """
-            Creates an array with ndetectors*nscans pixel rows, with the trimmed
-            pixels set to True.
+        Creates an array with ndetectors*nscans pixel rows, with the trimmed
+        pixels set to True.
         """
         trimScanArray = np.ones((self.nDetectors, self.scanWidth),dtype=trimType)
         for row in range(len(self.TrimTable)):
@@ -150,7 +152,11 @@ class ViirsMender:
 
     def mend(self, band):
         """
-    FIXME: doc
+        Uses all the internals calculated from initializing with lat/lon to do the actual
+        data value replacement. Because we save all the upfront calculations, this can be fast
+        and is designed to be called many times for each granule set.
+
+        band: 2d array of data values, usually pulled straight from SV*** files.
         """
         untrim_mask = np.invert(self.trimMask)
         band[self.trimMask] = band[untrim_mask][self.replaceLocs]
