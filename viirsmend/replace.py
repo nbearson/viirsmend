@@ -8,6 +8,7 @@ Copyright (c) 2013 University of Wisconsin SSEC. All rights reserved.
 import os
 import re
 import shutil
+import glob
 
 import numpy as np
 import h5py
@@ -70,6 +71,14 @@ ViirsMTags = ['SVM01',
               'SVM15',
               'SVM16',]
 
+def replace_c(filename):
+  dirname = os.path.dirname(filename)
+  basename = os.path.basename(filename)
+  identifier = "_".join(basename.split("_")[:5])
+  globstr = dirname + "/" + identifier + "*" + "noaa_ops.h5"
+  print globstr
+  fname = glob.glob(globstr)[0]
+  return fname
 
 
 def loopfiles(fgeo_name):
@@ -82,7 +91,7 @@ def loopfiles(fgeo_name):
     bandtags = ViirsITags
     res = vm.IMG_RESOLUTION
   else:
-    raise RuntimeError, "geo tag [", geotag, "] not recognized"
+    raise RuntimeError, "geo tag [%s] not recognized" % (geotag)
 
   fgeo = h5py.File(fgeo_name, 'r')
   lats = fgeo["%s/Latitude"  % ViirsGeoGroup[geotag]][:]
@@ -92,7 +101,13 @@ def loopfiles(fgeo_name):
   
   for sdrtag in bandtags:
     # making copy of file so we preserve the original 
-    fsdr_name = fgeo_name.replace(geotag, sdrtag) # TODO: this won't work, last few values (c....) aren't the same 
+    fsdr_name = fgeo_name.replace(geotag, sdrtag)
+    # we'd be ok at this point, if the c#### section of the filename wasn't unique for every file
+    try:
+      fsdr_name = replace_c(fsdr_name)
+    except:
+      continue
+
     fsdr_mend_name = fsdr_name.replace(".h5", ".mended.h5")
     shutil.copyfile(fsdr_name, fsdr_mend_name)
 
