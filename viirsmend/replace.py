@@ -21,14 +21,15 @@ log = logging.getLogger(__name__)
 
 
 def _usage():
-  return """usage: %prog 
+  return """usage: %prog [geolocation file]
+  Script expects matching SDR files to be in the same directory, but will gracefully skip over any that don't exist.
 """
 
 def _handle_args():
   parser = OptionParser(usage=_usage())
   parser.add_option('-v', '--verbose', dest='verbosity', action="count", default=0,
                     help='each occurrence increases verbosity 1 level through ERROR-WARNING-INFO-DEBUG')
-  return parser.parse_args()
+  return parser
 
 ViirsGeoGroup = {}
 ViirsGeoGroup['GMTCO'] = '/All_Data/VIIRS-MOD-GEO-TC_All'
@@ -145,7 +146,8 @@ def loopfiles(fgeo_name):
 
 if __name__ == "__main__":
 
-  options, args = _handle_args()
+  parser = _handle_args()
+  options, args = parser.parse_args() 
 
   levels = [logging.ERROR, logging.WARN, logging.INFO, logging.DEBUG]
   verbosity = min(options.verbosity, len(levels))
