@@ -116,12 +116,13 @@ def loopfiles(fgeo_name):
     for dtype in ["Radiance", "Reflectance", "BrightnessTemperature"]:
       print dtype
       try:
-        sdsname = "%s/%s" % (ViirsBandGroup[bandtag], dtype) 
+        sdsname = "%s/%s" % (ViirsBandGroup[sdrtag], dtype)
         data = fsdr[sdsname][:]
         vmr.mend(data)
         # replacing in-place with mended data
         fsdr[sdsname][:] = data
       except:
+        print "exception encountered replacing data!"
         continue # expect lots of exceptions, being naive and trying every sds on every file 
     fsdr.close()
 
