@@ -9,12 +9,26 @@ import os
 import re
 import shutil
 import glob
+from optparse import OptionParser
 
 import numpy as np
 import h5py
 
 import viirsmend as vm
 
+import logging
+log = logging.getLogger(__name__)
+
+
+def _usage():
+  return """usage: %prog 
+"""
+
+def _handle_args():
+  parser = OptionParser(usage=_usage())
+  parser.add_option('-v', '--verbose', dest='verbosity', action="count", default=0,
+                    help='each occurrence increases verbosity 1 level through ERROR-WARNING-INFO-DEBUG')
+  return parser.parse_args()
 
 ViirsGeoGroup = {}
 ViirsGeoGroup['GMTCO'] = '/All_Data/VIIRS-MOD-GEO-TC_All'
@@ -76,7 +90,7 @@ def replace_c(filename):
   basename = os.path.basename(filename)
   identifier = "_".join(basename.split("_")[:5])
   globstr = dirname + "/" + identifier + "*" + "noaa_ops.h5"
-  print globstr
+  log.info("Globbing on: %s" % (globstr))
   fname = glob.glob(globstr)[0]
   return fname
 
@@ -106,34 +120,42 @@ def loopfiles(fgeo_name):
     try:
       fsdr_name = replace_c(fsdr_name)
     except:
-      continue
+      log.warn("replace_c couldn't find file to match %s" % (fsdr_name))
+      continue # common except if file doesn't exist
 
     fsdr_mend_name = fsdr_name.replace(".h5", ".mended.h5")
     shutil.copyfile(fsdr_name, fsdr_mend_name)
 
-    print "Mending ", fsdr_mend_name
+    print "Creating: ", fsdr_mend_name
     fsdr = h5py.File(fsdr_mend_name, 'r+')
     for dtype in ["Radiance", "Reflectance", "BrightnessTemperature"]:
-      print dtype
+      log.info("Trying dtype: %s" % (dtype))
       try:
         sdsname = "%s/%s" % (ViirsBandGroup[sdrtag], dtype)
         data = fsdr[sdsname][:]
         vmr.mend(data)
         # replacing in-place with mended data
-        fsdr[sdsname][:] = data
-      except:
-        print "exception encountered replacing data!"
-        continue # expect lots of exceptions, being naive and trying every sds on every file 
+        fsdr[sdsname].write_direct(data)
+#        fsdr[sdsname][:] = data
+      except Exception, e:
+        log.info("Exception encountered replacing data:\n %s" % (e))
+        continue # expect lots of exceptions, being naive for now and trying every sds on every file 
     fsdr.close()
 
 
 if __name__ == "__main__":
-  import logging
-  LOG_LEVEL = logging.DEBUG
-  LOG_FORMAT = '%(asctime)s %(funcName)s %(lineno)s %(levelname)s: %(message)s'
-  logging.basicConfig(level=LOG_LEVEL, format=LOG_FORMAT)
 
-  import sys
-  geofile = sys.argv[1]
+  options, args = _handle_args()
 
+  levels = [logging.ERROR, logging.WARN, logging.INFO, logging.DEBUG]
+  verbosity = min(options.verbosity, len(levels))
+  log_format = '%(asctime)s %(funcName)s %(lineno)s %(levelname)s: %(message)s'
+  logging.basicConfig(level = levels[options.verbosity], format=log_format)
+
+  if not len(args) == 1:
+    print "Invalid arguments!"
+    parser.print_help()
+    exit(1)
+
+  geofile = args[0]
   loopfiles(geofile)
