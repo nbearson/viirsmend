@@ -144,8 +144,8 @@ def loopfiles(fgeo_name):
     fsdr.close()
 
 
-if __name__ == "__main__":
 
+def main():
   parser = _handle_args()
   options, args = parser.parse_args() 
 
@@ -161,3 +161,6 @@ if __name__ == "__main__":
 
   geofile = args[0]
   loopfiles(geofile)
+
+if __name__ == "__main__":
+  main()
