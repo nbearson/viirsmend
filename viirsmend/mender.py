@@ -87,10 +87,9 @@ ViirsMTags = ['SVM01',
               'SVM16',]
 
 def replace_c(filename):
-  dirname = os.path.dirname(filename)
-  basename = os.path.basename(filename)
+  dirname, basename = os.path.split(filename)
   identifier = "_".join(basename.split("_")[:5])
-  globstr = dirname + "/" + identifier + "*" + "noaa_ops.h5"
+  globstr = os.path.join(dirname, identifier + "*" + "noaa_ops.h5")
   log.info("Globbing on: %s" % (globstr))
   fname = glob.glob(globstr)[0]
   return fname

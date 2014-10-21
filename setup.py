@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 readme = open('README.txt', 'rt').read()
 
 classifiers = ""
-version = '1.0.1'
+version = '1.0.2'
 
 setup(
     name='viirsmend',
