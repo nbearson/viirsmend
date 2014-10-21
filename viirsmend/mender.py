@@ -87,10 +87,9 @@ ViirsMTags = ['SVM01',
               'SVM16',]
 
 def replace_c(filename):
-  dirname = os.path.dirname(filename)
-  basename = os.path.basename(filename)
+  dirname, basename = os.path.split(filename)
   identifier = "_".join(basename.split("_")[:5])
-  globstr = dirname + "/" + identifier + "*" + "noaa_ops.h5"
+  globstr = os.path.join(dirname, identifier + "*" + "noaa_ops.h5")
   log.info("Globbing on: %s" % (globstr))
   fname = glob.glob(globstr)[0]
   return fname
@@ -144,8 +143,8 @@ def loopfiles(fgeo_name):
     fsdr.close()
 
 
-if __name__ == "__main__":
 
+def main():
   parser = _handle_args()
   options, args = parser.parse_args() 
 
@@ -161,3 +160,6 @@ if __name__ == "__main__":
 
   geofile = args[0]
   loopfiles(geofile)
+
+if __name__ == "__main__":
+  main()

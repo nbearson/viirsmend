@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 readme = open('README.txt', 'rt').read()
 
 classifiers = ""
-version = '1.0.0'
+version = '1.0.2'
 
 setup(
     name='viirsmend',
@@ -25,4 +25,9 @@ setup(
         'scipy',
 #        'matplotlib',  # Used for verification purposes, not required
         ],
+    entry_points={
+        'console_scripts':
+            ['viirsmend=viirsmend.mender:main']
+    }
+
 )
