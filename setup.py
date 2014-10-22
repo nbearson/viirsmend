@@ -3,7 +3,7 @@
 
 from setuptools import setup, find_packages
 
-readme = open('README.txt', 'rt').read()
+readme = open('README.md', 'rt').read()
 
 classifiers = ""
 version = '1.0.2'
@@ -11,7 +11,7 @@ version = '1.0.2'
 setup(
     name='viirsmend',
     version=version,
-    description="Library and scripts to remap imager data to a grid",
+    description="Python package for mending bowtie removed pixels in a VIIRS image",
     long_description=readme,
     classifiers=filter(None, classifiers.split("\n")),
     keywords='',
